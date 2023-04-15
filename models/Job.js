@@ -10,19 +10,11 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    location: {
-      type: String,
-      required: true,
-    },
     salary: {
       type: Number,
       required: true,
     },
-    experience: {
-      type: Number,
-      required: true,
-    },
-    keywords: {
+    tags: {
       type: [String],
       required: true,
     },
@@ -39,8 +31,8 @@ const jobSchema = new mongoose.Schema(
           required: true,
         },
         resume: {
-          type: String,
-          required: true,
+          data: Buffer,  // Update the type to Buffer for storing binary data
+          contentType: String, // Add a field to store the MIME type 
         },
         coverMessage: {
           type: String,
