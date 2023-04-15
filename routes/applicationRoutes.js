@@ -4,16 +4,20 @@ const router = express.Router();
 const Job = require('../models/Job');
 const authenticate = require('../middleware/authenticate');
 
-router.get('/', authenticate(['placement officer']), async (req, res) => {
+router.get('/', authenticate(['placement_officer']), async (req, res) => {
   try {
     const applications = await Application.find().populate('job', 'title employer');
+    console.log("asdasd")
+
     res.send(applications);
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
 
-router.put('/:id', authenticate(['placement officer']), async (req, res) => {
+
+// CHANGE APPLLICATION STATUS
+router.put('/:id', authenticate(['placement_officer']), async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
     if (!application) throw new Error('Application not found');

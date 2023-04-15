@@ -73,34 +73,47 @@ router.delete('/:id', authenticate(['employer']), async (req, res) => {
   }
 });
 
-// configure multer to store uploaded files in local storage
+// STUDENT APPLICATIONS ROUTES
+
+// Set storage engine for multer
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // specify the directory where files will be stored
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // specify the destination folder for uploaded files
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // specify the file name
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // set the filename to be unique
   },
 });
-const upload = multer({ storage: storage });
+
+// Initialize multer with the storage engine and other options
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype === 'application/pdf') { // specify the allowed file type(s)
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed.')); // handle other file types
+    }
+  },
+  limits: { fileSize: 1024 * 1024 * 5 }, // specify the file size limit (in this example, 5 MB)
+});
 
 router.post('/:id/apps', authenticate(['student']), upload.single('resume'), async (req, res) => {
   try {
     const job = await Job.findOne({ _id: req.params.id });
     if (!job) throw new Error('Job not found');
     
-    const { coverMessage } = req.body;
+    // const { coverMessage } = req.body;
 
     // const { coverMessage } = req.body;
 
+    const { resume, coverMessage } = req.body;
+
     const applicant = {
       student: req.user.id,
-      resume: {
-        data: fs.readFileSync(req.file.path),
-        contentType: req.file.mimetype,
-      },
+      resume: req.file.path, // save the file path in the database
       coverMessage: coverMessage,
+      status: 'applied',
     };
     job.applicants.push(applicant);
     await job.save();
@@ -123,6 +136,39 @@ router.get('/:id/apps', authenticate(['employer']), async (req, res) => {
         status: applicant.status
       };
     });    res.send(applications);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+
+// CHANGE APPLICANT STATUS
+
+router.put('/:jobId/apps/:appId/status', authenticate(['employer']), async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+    const appId = req.params.appId;
+    const newStatus = req.body.status;
+
+    // Find the job by ID and validate the employer's ownership
+    const job = await Job.findById(jobId);
+    // console.log(job);
+    if (!job) throw new Error('Job not found');
+    if (job.employer.toString() !== req.user.id) throw new Error('Unauthorized');
+
+
+    console.log(job.applicants[1].id);
+    // Find the index of the applicant in the applicants array
+    const applicantIndex = job.applicants.findIndex(applicant => applicant.id === appId);
+
+
+    if (applicantIndex === -1) throw new Error('Application not found');
+
+    // Update the status of the applicant and save the job
+    job.applicants[applicantIndex].status = newStatus;
+    await job.save();
+
+    res.send('Application status updated successfully');
   } catch (error) {
     res.status(400).send(error.message);
   }

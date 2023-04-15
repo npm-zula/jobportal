@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
-app.use('/api/applications', applicationRoutes);
 app.use('/api/search', searchRoutes);
 
 const PORT = process.env.PORT || 3000;
