@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=DynaPuff&display=swap");
+* {
+  font-family: "DynaPuff", cursive;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background-color: #ffc400;
+}
+.container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 100px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+  text-align: center;
+  color: #ff6b6b;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+#login-form {
+  display: block;
+}
+#dashboard {
+  display: none;
+  margin-top: 50px;
+}
+#logout-btn {
+  margin-top: 10px;
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+}
+#logout-btn:hover {
+  background-color: #ff4d4d;
+}
+label {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+.form-control {
+  border: none;
+  border-bottom: 2px solid #ff6b6b;
+  border-radius: 0;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease-in-out;
+}
+.form-control:focus {
+  border-color: #ff4d4d;
+  box-shadow: none;
+}
+.btn-primary {
+  background-color: #ff6b6b;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+}
+.btn-primary:hover {
+  background-color: #ff4d4d;
+}
