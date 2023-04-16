@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const secretKey = 'mysecretkey';
 
 const  User  = require('../models/User');
+// const authenticate = require('../middleware/authenticate');
+
 
 router.post('/register', async (req, res) => {
   try {
@@ -23,6 +25,8 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email, password });
     if (!user) throw new Error('Invalid email or password');
     const token = jwt.sign({ id: user.id, role: user.role }, secretKey);
+
+    res.cookie('token', token, { httpOnly: true });
     res.send({ user, token });
   } catch (error) {
     res.status(400).send(error.message);
@@ -54,14 +58,16 @@ router.put('/profile', authenticate, async (req, res) => {
 });
 
 function authenticate(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).send('Unauthorized');
-  const token = authHeader.split(' ')[1];
+
+  // const authHeader = req.headers.authorization;
+  // if (!authHeader) return res.status(401).send('Unauthorized');
+  const token = req.cookies.token;
   jwt.verify(token, secretKey, (err, payload) => {
     if (err) return res.status(401).send('Unauthorized');
     req.user = { id: payload.id, role: payload.role };
     next();
   });
+
 }
 
 router.get('/', (req, res) => {

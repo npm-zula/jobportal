@@ -5,12 +5,29 @@
   <!-- Include Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="../styles.css">
-  <style>
-    /* Your styles here */
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Job Application Portal</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Add Job</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">View Applicants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container layout">
     <h1>Welcome to Employer Dashboard</h1>
     <hr>
     <div id="job-list">
@@ -22,7 +39,7 @@
         <li>Job 3</li>
       </ul>
     </div>
-    <div id="add-job-form" style="display: none;">
+    <div id="add-job-form" style="display: block;">
       <h3>Add Job</h3>
       <form id="add-job-form">
         <!-- Add job form content here -->
@@ -47,30 +64,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    // Switch to add job form with fade effect
-    $("#add-job-link").on("click", function() {
-      $("#job-list").fadeOut(500, function() {
-        $("#add-job-form").fadeIn(500);
-      });
-    });
 
-    // Switch to job list with fade effect
-    $("#job-list-link").on("click", function() {
-      $("#add-job-form").fadeOut(500, function() {
-        $("#job-list").fadeIn(500);
-      });
-    });
-
-    // Submit add job form
-    $("#add-job-form").on("submit", function(event) {
-      event.preventDefault();
-      // Submit logic here
-      console.log("Job added!");
-      // Clear form fields
-      $("#job-title").val("");
-      $("#job-description").val("");
-      $("#job-salary").val("");
-    });
   </script>
 </body>
 </html>
