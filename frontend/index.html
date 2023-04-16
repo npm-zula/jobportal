@@ -64,7 +64,7 @@
             <input
               type="email"
               class="form-control"
-              id="email"
+              id="email-signup"
               placeholder="Enter email"
             />
           </div>
@@ -73,7 +73,7 @@
             <input
               type="password"
               class="form-control"
-              id="password"
+              id="password-signup"
               placeholder="Enter password"
             />
           </div>
@@ -130,10 +130,12 @@
       $("#signup-form").on("submit", function (e) {
         e.preventDefault();
         let name = $("#name").val();
-        let email = $("#email").val();
-        let password = $("#password").val();
+        let email = $("#email-signup").val();
+        let password = $("#password-signup").val();
         let contact = $("#contact").val();
         let role = $("#role").val();
+
+        console.log(name, email, password, contact, role)
 
         $.ajax({
           url: "http://localhost:3000/api/auth/register",
@@ -147,7 +149,7 @@
           },
           success: function (data) {
             console.log(data);
-            if (data.status === "success") {
+            if (data) {
               alert("Sign up successful");
               $("#signup-form").fadeOut(500, function () {
                 $("#login-form").fadeIn(200);
@@ -191,6 +193,8 @@
           },
         });
       });
+
+
     </script>
   </body>
 </html>
