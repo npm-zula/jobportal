@@ -1,49 +1,192 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Employer Dashboard</title>
-  <!-- Include Bootstrap CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="style.css">
+  <head>
+    <title>Employer Dashboard</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Job Application Portal</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="../index.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-</head>
-<body>
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Job Application Portal</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link text-danger" href="#">Logout</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- CONTENT -->
-  <div class="container layout">
-    <h1>Welcome to Student Dashboard</h1>
-    <hr>
-    <div>
+    <!-- CONTENT -->
+    <div class="container layout">
+      <h1>Welcome to Student Dashboard</h1>
+      <hr />
+      <div>
         <div id="search-bar">
-            <input type="text" id="search-input" placeholder="Search jobs">
-            <button id="search-btn" class="btn btn-primary">Search</button>
+          <input type="text" id="search-input" placeholder="Search jobs" />
+          <button id="search-btn" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+
+      <div class="row" id="job-list"></div>
+
+      <!-- Modal for job application form -->
+      <div
+        class="modal fade"
+        id="jobApplicationModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="jobApplicationModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="jobApplicationModalLabel">
+                Job Application
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form id="jobApplicationForm" enctype="multipart/form-data">
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="coverMessage">Cover Message</label>
+                  <textarea
+                    class="form-control"
+                    id="coverMessage"
+                    name="coverMessage"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="resume">Resume</label>
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="resume"
+                    name="resume"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
+      </div>
     </div>
 
-    <div>
-      
-    </div>
-  </div>
-  <!-- Include full version of jQuery and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
+    <!-- Include full version of jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // search for jobs
+      $(document).ready(function () {
+        var token = localStorage.getItem("token");
+        // Attach event handler to search button
+        $("#search-btn").on("click", function () {
+          // Get search input value
+          var searchQuery = $("#search-input").val();
 
-  </script>
-</body>
+          // Fetch jobs from API route with search query as parameter
+          $.ajax({
+            url: `http://localhost:3000/api/search?tags=${searchQuery}`,
+            method: "GET",
+            success: function (jobs) {
+              console.log(jobs);
+              // Display filtered jobs on the page
+              var jobsListDiv = $("#job-list"); // Select the jobs list div
+              jobsListDiv.empty(); // Clear existing jobs list
+              jobs.forEach(function (job) {
+                // Append job details to jobs list div with data-id attribute
+                jobsListDiv.append(`
+                  <div class="col-md-4" id="job" data-id="${job._id}">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">${job.title}</h5>
+                        <p class="card-text">${job.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                `);
+              });
+            },
+            error: function (xhr, status, error) {
+              // On error, display error message
+              console.error(error);
+            },
+          });
+        });
+
+        $(document).on("click", "#job", function () {
+          var jobId = $(this).data("id"); // Get job ID from data-id attribute
+          
+          // Set form action to API route with job ID as parameter
+          $("#jobApplicationModal").modal("show"); // Show the job application modal
+
+
+          // Attach event handler to job application form
+          $("#jobApplicationForm").on("submit", function (e) {
+            e.preventDefault(); // Prevent default form submission
+            var formData = new FormData(this); // Get form data
+            
+            // Send form data to API route with job ID as parameter
+            $.ajax({
+              url: `http://localhost:3000/api/jobs/${jobId}/apps`,
+              method: "POST",
+              data: formData,
+              contentType: false,
+              processData: false,
+              headers: { Authorization: `Bearer ${token}` },
+              success: function (response) {
+                console.log(response);
+                // On success, display success message
+                alert("Job application submitted successfully!");
+                $("#jobApplicationModal").modal("hide"); // Hide the job application modal
+              },
+              error: function (xhr, status, error) {
+                // On error, display error message
+                console.error(error);
+              },
+            });
+          });
+        });
+
+      });
+    </script>
+  </body>
 </html>

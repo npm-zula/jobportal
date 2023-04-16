@@ -7,9 +7,9 @@ const authenticate = require('../middleware/authenticate');
 router.get('/', async (req, res) => {
   try {
     const searchTags = req.query.tags;
+    // console.log(searchTags);
   
     const jobs = await Job.find({ tags: { $in: searchTags } }).populate('employer', 'name email');
-
     res.send(jobs);
   } catch (error) {
     res.status(400).send(error.message);

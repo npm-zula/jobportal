@@ -103,11 +103,7 @@ router.post('/:id/apps', authenticate(['student']), upload.single('resume'), asy
     const job = await Job.findOne({ _id: req.params.id });
     if (!job) throw new Error('Job not found');
     
-    // const { coverMessage } = req.body;
-
-    // const { coverMessage } = req.body;
-
-    const { resume, coverMessage } = req.body;
+    const { coverMessage } = req.body;
 
     const applicant = {
       student: req.user.id,
