@@ -6,8 +6,8 @@
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -37,10 +37,13 @@
             />
           </div>
           <div class="text-center">
-            <button type="submit" class="btn btn-primary mt-2 mb-3">Submit</button>
-            <p id="signup-link" style="cursor: pointer;">Not registered? Sign up</p>
+            <button type="submit" class="btn btn-primary mt-2 mb-3">
+              Submit
+            </button>
+            <p id="signup-link" style="cursor: pointer">
+              Not registered? Sign up
+            </p>
           </div>
-
         </form>
       </div>
 
@@ -92,96 +95,102 @@
             </select>
           </div>
           <div class="text-center">
-            <button type="submit" class="btn btn-primary mb-3 mt-2">Submit</button>
-            <p id="login-link" style="cursor: pointer;">Already registered? Login</p>
+            <button type="submit" class="btn btn-primary mb-3 mt-2">
+              Submit
+            </button>
+            <p id="login-link" style="cursor: pointer">
+              Already registered? Login
+            </p>
           </div>
         </form>
       </div>
-      
-      <div id="dashboard" style="display: none">
-        <h3>Welcome <span id="username"></span></h3>
-        <p id="role"></p>
-        <button id="logout-btn" class="btn btn-danger">Logout</button>
-      </div>
     </div>
 
- <!-- Include jQuery and Bootstrap JS -->
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
       // Switch to sign-up form with fade effect
-      $("#signup-link").on("click", function() {
-        $("#login-form").fadeOut(500, function() {
+      $("#signup-link").on("click", function () {
+        $("#login-form").fadeOut(500, function () {
           $("#signup-form").fadeIn(200);
         });
       });
-  
+
       // Switch to login form with fade effect
-      $("#login-link").on("click", function() {
-        $("#signup-form").fadeOut(500, function() {
+      $("#login-link").on("click", function () {
+        $("#signup-form").fadeOut(500, function () {
           $("#login-form").fadeIn(200);
         });
       });
     </script>
-    <!-- <script>
-      // Switch to sign-up form when "Not registered? Sign up" link is clicked
-      $("#signup-link").on("click", function() {
-        $("#login-form").hide();
-        $("#signup-form").show();
-      });
-  
-      // Switch to login form when "Already registered? Login" link is clicked
-      $("#login-link").on("click", function() {
-        $("#signup-form").hide();
-        $("#login-form").show();
-      });
-    </script> -->
 
-    <!--
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Sign up form submit
+      $("#signup-form").on("submit", function (e) {
+        e.preventDefault();
+        let name = $("#name").val();
+        let email = $("#email").val();
+        let password = $("#password").val();
+        let contact = $("#contact").val();
+        let role = $("#role").val();
 
-  <script>
-    // Add event listener for login form submit
-    $('#login-form').on('submit', function (e) {
-      e.preventDefault();
-
-      // Get email and password from form input
-      const email = $('#email').val();
-      const password = $('#password').val();
-
-      // Send login request to backend API
-      $.post('/login', { email, password })
-        .done(function (response) {
-          // If login is successful, hide login form and show dashboard
-          $('#login-form').hide();
-          $('#dashboard').show();
-          // Set username and role in dashboard
-          $('#username').text(response.user.name);
-          $('#role').text('Role: ' + response.user.role);
-        })
-        .fail(function (error) {
-          // Display error message if login fails
-          alert('Failed to login: ' + error.responseText);
+        $.ajax({
+          url: "http://localhost:3000/api/auth/register",
+          type: "POST",
+          data: {
+            name,
+            email,
+            password,
+            contact,
+            role,
+          },
+          success: function (data) {
+            console.log(data);
+            if (data.status === "success") {
+              alert("Sign up successful");
+              $("#signup-form").fadeOut(500, function () {
+                $("#login-form").fadeIn(200);
+              });
+            } else {
+              alert("Sign up failed");
+            }
+          },
+          error: function (err) {
+            console.log(err);
+          },
         });
-    });
+      });
 
-    // Add event listener for logout button click
-    $('#logout-btn').on('click', function () {
-      // Send logout request to backend API
-      $.post('/logout')
-        .done(function () {
-          // If logout is successful, hide dashboard and show login form
-          $('#dashboard').hide();
-          $('#login-form').show();
-        })
-        .fail(function (error) {
-          // Display error message if logout fails
-          alert('Failed to logout: ' + error.responseText);
+      let urlEmployer = "http://127.0.0.1:5500/frontend/employer";
+      let urlStudent = "http://127.0.0.1:5500/frontend/student";
+
+      // Login form submit
+      $("#login-form").on("submit", function (e) {
+        e.preventDefault();
+        let email = $("#email").val();
+        let password = $("#password").val();
+
+        $.ajax({
+          url: "http://localhost:3000/api/auth/login",
+          type: "POST",
+          data: {
+            email,
+            password,
+          },
+          success: function (data) {
+            // console.log(data.user);
+            localStorage.setItem('token', data.token);
+            
+
+            window.location.href =
+              data.user.role === "employer" ? urlEmployer : urlStudent;
+          },
+          error: function (err) {
+            console.log(err);
+          },
         });
-    });
-
-  </script>
-   -->
+      });
+    </script>
   </body>
 </html>

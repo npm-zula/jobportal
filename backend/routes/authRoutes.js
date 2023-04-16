@@ -19,15 +19,29 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// router.post('/login', async (req, res) => {
+  // try {
+  //   const { email, password } = req.body;
+  //   const user = await User.findOne({ email, password });
+  //   if (!user) throw new Error('Invalid email or password');
+  //   const token = jwt.sign({ id: user.id, role: user.role }, secretKey);
+
+  //   res.cookie('token', token, {httpOnly: true,});
+  //   res.status(200).send({ user, token });
+  // } catch (error) {
+  //   res.status(400).send(error.message);
+  // }
+// });
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email, password });
     if (!user) throw new Error('Invalid email or password');
     const token = jwt.sign({ id: user.id, role: user.role }, secretKey);
-
-    res.cookie('token', token, { httpOnly: true });
-    res.send({ user, token });
+    // console.log(token)
+    // localStorage.setItem('token', token);
+    res.status(200).send({ user, token });
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -59,15 +73,16 @@ router.put('/profile', authenticate, async (req, res) => {
 
 function authenticate(req, res, next) {
 
-  // const authHeader = req.headers.authorization;
-  // if (!authHeader) return res.status(401).send('Unauthorized');
-  const token = req.cookies.token;
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).send('Unauthorized');
+  const token = authHeader.split(' ')[1];
+  // const token = req.cookies.token;
+  // console.log(token)
   jwt.verify(token, secretKey, (err, payload) => {
     if (err) return res.status(401).send('Unauthorized');
     req.user = { id: payload.id, role: payload.role };
     next();
   });
-
 }
 
 router.get('/', (req, res) => {

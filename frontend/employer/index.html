@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employer Dashboard</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Job Application Portal</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Jobs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#add-job-form">Add Job</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="container layout">
+      <h1 id="greetings-heading">Welcome</h1>
+
+      <hr />
+      <div id="job-list" class="my-5">
+        <h3 class="text-center mb-4">Job List</h3>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Job 1</h5>
+                <p class="card-text">Job description goes here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="add-job-form">
+        <h3>Add Job</h3>
+        <form id="add-job-form">
+          <!-- Add job form content here -->
+          <div class="form-group">
+            <label for="job-title">Job Title:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="job-title"
+              name="job-title"
+            />
+          </div>
+          <div class="form-group">
+            <label for="job-description">Job Description:</label>
+            <textarea
+              class="form-control"
+              id="job-description"
+              name="job-description"
+              rows="4"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="job-salary">Job Salary:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="job-salary"
+              name="job-salary"
+            />
+          </div>
+          <div class="form-group">
+            <label for="job-tags">Tags:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="job-tags"
+              name="job-tags"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Add Job</button>
+        </form>
+      </div>
+      <div></div>
+    </div>
+    <!-- Include full version of jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // jQuery/JS code for fetching user object and updating heading div
+      $(document).ready(function () {
+        // Fetch token from localStorage
+        var token = localStorage.getItem("token");
+
+        // Fetch user object from API route
+        $.ajax({
+          url: "http://localhost:3000/api/auth/profile",
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+          success: function (response) {
+            // Update heading div with user's name
+            // console.log(response)
+            $("#greetings-heading").text(`Welcome ${response.name}!`);
+
+            // Update job list div with user's jobs
+            $.ajax({
+              url: "http://localhost:3000/api/jobs/",
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+              success: function (response) {
+                
+
+                var filteredJobs = response.filter(function (job) {
+                  return job.employer._id === userId;
+                });
+
+                console.log(filteredJobs);
+              },
+            });
+          },
+          error: function (xhr, status, error) {
+            // On error, display error message
+            console.error(error);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

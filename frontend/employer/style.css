@@ -1,3 +1,69 @@
-.layout {
-    max-width: 1800px;
-}
+
+  
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  #job-list {
+    margin-bottom: 20px;
+  }
+  
+  #job-list h3 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  #job-list-items {
+    list-style: none;
+    padding: 0;
+  }
+  
+  #job-list-items li {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  #add-job-form h3 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+  }
+  
+  
+  
+  /* Responsive styles */
+  @media (min-width: 576px) {
+    .layout {
+      max-width: 540px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .layout {
+      max-width: 720px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .layout {
+      max-width: 960px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .layout {
+      max-width: 1140px;
+    }
+  }
+  
+
+  #add-job-form {
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
