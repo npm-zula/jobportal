@@ -34,7 +34,7 @@
             <a class="nav-link" href="#add-job-form">Add Job</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-danger" href="#">Logout</a>
+            <a class="nav-link text-danger" href="../index.html">Logout</a>
           </li>
         </ul>
       </div>
@@ -43,21 +43,53 @@
     <!-- CONTENT -->
     <div class="container layout">
       <h1 id="greetings-heading">Welcome</h1>
-
       <hr />
-      <div id="job-list" class="my-5">
-        <h3 class="text-center mb-4">Job List</h3>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Job 1</h5>
-                <p class="card-text">Job description goes here.</p>
-              </div>
+
+      <h3 class="text-center mb-4">Job List</h3>
+      <div class="my-5">
+        <div class="row" id="job-list"></div>
+      </div>
+
+      <!-- HTML for Bootstrap modal with ID job-applications-modal -->
+      <div
+        class="modal"
+        id="job-applications-modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="job-applications-modal-label"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="job-applications-modal-label">
+                Job Applications
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Job applications content will be dynamically appended here -->
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
       </div>
+
       <div id="add-job-form">
         <h3>Add Job</h3>
         <form id="add-job-form">
@@ -122,26 +154,125 @@
             // console.log(response)
             $("#greetings-heading").text(`Welcome ${response.name}!`);
 
+            var userId = response._id;
+
             // Update job list div with user's jobs
             $.ajax({
               url: "http://localhost:3000/api/jobs/",
               method: "GET",
               headers: { Authorization: `Bearer ${token}` },
               success: function (response) {
-                
-
                 var filteredJobs = response.filter(function (job) {
                   return job.employer._id === userId;
                 });
 
-                console.log(filteredJobs);
+                // console.log(filteredJobs);
+                // $("#job-list").empty();
+                filteredJobs.forEach(function (job) {
+                  // Append job details to jobs list div
+                  $("#job-list").append(`
+                        <div class="col-md-4 job-card" data-id="${job._id}">
+                          <div class="card" style="border: 1px solid red;">
+                            <div class="card-body" >
+                              <h5 class="card-title">${job.title}</h5>
+                              <p class="card-text">${job.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                        `);
+                });
+              },
+              error: function (xhr, status, error) {
+                // On error, display error message
+                console.error(error);
               },
             });
           },
-          error: function (xhr, status, error) {
-            // On error, display error message
-            console.error(error);
-          },
+        });
+        $(document).on("click", ".job-card", function () {
+          var jobId = $(this).data("id"); // Get the job ID from the data attribute of the clicked job card
+          // console.log(jobId);
+          // Fetch job applications from API route
+          $.ajax({
+            url: `http://localhost:3000/api/jobs/${jobId}/apps`, // Use the job ID to construct the API URL
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+            success: function (response) {
+              // console.log(response);
+              // Populate modal with job applications data
+              var modalBody = $("#job-applications-modal .modal-body");
+              modalBody.empty(); // Clear modal body before appending new data
+              // Loop through job applications and append to modal body
+              response.forEach(function (application) {
+                // console.log(application);
+                // Append application details to modal body
+                modalBody.append(`
+                
+                  <div >
+                    <h5>Student: ${application.student}</h5>
+                    <p>Resume: ${application.resume}</p>
+                    <p>Cover Message: ${application.coverMessage}</p>
+                    <p>Status: ${application.status}</p>
+                    <div>
+                      <button class="btn btn-success" data-id = "${application.id}">Accept</button>
+                      <button class="btn btn-danger" data-id = "${application.id}">Reject</button>
+                    </div>
+                    <hr/>
+                  </div>
+                  `);
+              });
+              // Open the modal
+              $("#job-applications-modal").modal("show");
+
+              // Add click event listener to accept/reject buttons
+              $(document).on("click", ".btn-success", function () {
+                var applicationId = $(this).data("id");
+                // console.log(jobId);
+                // console.log(applicationId);
+                $.ajax({
+                  url: `http://localhost:3000/api/jobs/${jobId}/apps/${applicationId}/status`,
+                  method: "PUT",
+                  headers: { Authorization: `Bearer ${token}` },
+                  data: { status: "shortlisted" },
+                  success: function (response) {
+                    console.log(response);
+                  },
+                  error: function (xhr, status, error) {
+                    // On error, display error message
+                    console.error(error);
+                  },
+                });
+              });
+            },
+            error: function (xhr, status, error) {
+              // On error, display error message
+              console.error(error);
+            },
+          });
+        });
+
+        // Add click event listener to add job form
+        $("#add-job-form").on("submit", function (e) {
+          e.preventDefault();
+
+          let title = $("#job-title").val();
+          let description = $("#job-description").val();
+          let salary = $("#job-salary").val();
+          let tags = $("#job-tags").val();
+
+          $.ajax({
+            url: "http://localhost:3000/api/jobs/",
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            data: { title, description, tags, salary },
+            success: function (response) {
+              console.log(response);
+            },
+            error: function (xhr, status, error) {
+              // On error, display error message
+              console.error(error);
+            },
+          });
         });
       });
     </script>

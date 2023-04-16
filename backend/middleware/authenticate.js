@@ -21,9 +21,10 @@ const  User  = require('../models/User');
 
 const authenticate = (roles) => async (req, res, next) => {
   try {
-    console.log("hi")
+    // console.log("hi")
     // Retrieve token from the cookie
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
+    const token = req.headers.authorization.split(' ')[1];
     if (!token) throw new Error('Unauthorized access');
 
     // Verify and decode token

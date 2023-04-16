@@ -133,7 +133,8 @@ router.get('/:id/apps', authenticate(['employer']), async (req, res) => {
         student: applicant.student,
         resume: applicant.resume,
         coverMessage: applicant.coverMessage,
-        status: applicant.status
+        status: applicant.status,
+        id : applicant._id
       };
     });    res.send(applications);
   } catch (error) {
@@ -157,7 +158,7 @@ router.put('/:jobId/apps/:appId/status', authenticate(['employer']), async (req,
     if (job.employer.toString() !== req.user.id) throw new Error('Unauthorized');
 
 
-    console.log(job.applicants[1].id);
+    // console.log(job.applicants[1].id);
     // Find the index of the applicant in the applicants array
     const applicantIndex = job.applicants.findIndex(applicant => applicant.id === appId);
 
